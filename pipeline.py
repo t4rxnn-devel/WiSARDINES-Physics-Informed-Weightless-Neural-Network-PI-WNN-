@@ -1,89 +1,78 @@
-from typing import Tuple
 import time
+from typing import Tuple
 import numpy as np
 from config import WiSARDPhysicsConfig
 from encoder import ThermometerQuantizer
 from wisard_engine import PurePhysicsInformedWiSARD
 
-def simulate_cern_stream(num_samples: int, cfg: WiSARDPhysicsConfig) -> Tuple[np.ndarray, np.ndarray]:
-    """Generates a mixture of valid high-energy particle tracks and physical anomalies."""
-    np.random.seed(888)
-    telemetry_data = []
-    labels = []
-    
-    # Discriminator Bank 0: Nominal Particle Signatures matching mass invariants
-    count_bank_0 = int(num_samples * 0.6)
-    while len(labels) < count_bank_0:
-        p = np.random.uniform(0.5, 12.0)
-        e = np.sqrt(p**2 + cfg.TARGET_INVARIANT**2)
-        telemetry_data.append([p, e])
-        labels.append(0)
+class NaturalTrainingPipeline:
+    """Production stream manager executing high-volume continuous data ingestion loops."""
 
-    # Discriminator Bank 1: Low-Mass Variant Decay tracks
-    count_bank_1 = int(num_samples * 0.8)
-    while len(labels) < count_bank_1:
-        p = np.random.uniform(0.5, 6.0)
-        e = p + np.random.uniform(0.02, 0.4)
-        telemetry_data.append([p, e])
-        labels.append(1)
+    def __init__(self, cfg: WiSARDPhysicsConfig) -> None:
+        self.cfg: WiSARDPhysicsConfig = cfg
+        self.engine: PurePhysicsInformedWiSARD = PurePhysicsInformedWiSARD(cfg)
+        self.p_quantizer = ThermometerQuantizer(0.0, 25.0, self.cfg.BIT_DEPTH)
+        self.e_quantizer = ThermometerQuantizer(0.0, 60.0, self.cfg.BIT_DEPTH)
 
-    # Discriminator Bank 2: Scattered Beam-Halo/Pileup Background Noise
-    while len(labels) < num_samples:
-        p = np.random.uniform(10.0, 20.0)
-        e = p + np.random.uniform(15.0, 35.0)
-        telemetry_data.append([p, e])
-        labels.append(2)
-
-    return np.array(telemetry_data, dtype=np.float64), np.array(labels, dtype=np.int32)
-
-def run_system_verification() -> None:
-    """Executes structural memory validation and profiles execution speed."""
-    cfg = WiSARDPhysicsConfig()
-    print(">> Initializing CERN Invariant Track Simulator stream...")
-    X_raw, y = simulate_cern_stream(2500, cfg)
-    
-    # Configure dedicated quantizers for raw features
-    p_quantizer = ThermometerQuantizer(0.0, 25.0, cfg.BIT_DEPTH)
-    e_quantizer = ThermometerQuantizer(0.0, 60.0, cfg.BIT_DEPTH)
-    
-    X_bin_p = p_quantizer.process(X_raw[:, 0, np.newaxis])
-    X_bin_e = e_quantizer.process(X_raw[:, 1, np.newaxis])
-    X_bin = np.concatenate((X_bin_p, X_bin_e), axis=1)
-    
-    split = int(len(y) * 0.80)
-    X_train_bin, X_test_bin = X_bin[:split], X_bin[split:]
-    X_train_raw, X_test_raw = X_raw[:split], X_raw[split:]
-    y_train, y_test = y[:split], y[split:]
-    
-    # Initialize Engine Architecture
-    wisard = PurePhysicsInformedWiSARD(cfg)
-    
-    print(">> Commencing pattern memorization phase across RAM Discriminator Banks...")
-    wisard.memorize(X_train_bin, X_train_raw, y_train)
-    
-    # Profile hardware execution time and measure processing jitter
-    print(">> Benchmarking real-time streaming inference latency metrics...")
-    latencies = []
-    for idx in range(min(200, len(y_test))):
-        s_bin = X_test_bin[idx:idx+1]
-        s_raw = X_test_raw[idx:idx+1]
+    def generate_streaming_batch(self, batch_size: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Simulates live data streams coming straight from raw particle detectors."""
+        telemetry_data = []
+        labels = []
         
-        start = time.perf_counter_ns()
-        _ = wisard.evaluate(s_bin, s_raw)
-        end = time.perf_counter_ns()
-        latencies.append(end - start)
+        c0 = int(batch_size * 0.4)
+        c1 = int(batch_size * 0.7)
         
-    mean_ns = np.mean(latencies)
-    jitter_ns = np.max(latencies) - mean_ns
-    
-    # Query final memory logs
-    tally_scores = wisard.evaluate(X_test_bin, X_test_raw)
-    final_predictions = np.argmax(tally_scores, axis=1)
-    accuracy = float(np.mean(final_predictions == y_test) * 100)
-    
-    print(f"\n================ WISARD MEMORY REGISTER REPORT ================")
-    print(f"Total Test Stream Sample Pool: {len(y_test)}")
-    print(f"Discriminator Resolution Accuracy: {accuracy:.2f}%")
-    print(f"Mean Latency Window Profile: {mean_ns:.2f} ns")
-    print(f"Hardware-Emulated Processing Jitter: {jitter_ns:.2f} ns")
-    print(f"===============================================================\n")
+        while len(labels) < c0:
+            p = np.random.uniform(0.5, 12.0)
+            e = np.sqrt(p**2 + self.cfg.TARGET_INVARIANT**2)
+            telemetry_data.append([p, e])
+            labels.append(0)
+
+        while len(labels) < c1:
+            p = np.random.uniform(0.5, 6.0)
+            e = p + np.random.uniform(0.02, 0.4)
+            telemetry_data.append([p, e])
+            labels.append(1)
+
+        while len(labels) < batch_size:
+            p = np.random.uniform(10.0, 20.0)
+            e = p + np.random.uniform(15.0, 35.0)
+            telemetry_data.append([p, e])
+            labels.append(2)
+
+        X_raw = np.array(telemetry_data, dtype=np.float64)
+        y = np.array(labels, dtype=np.int32)
+        
+        shuffle = np.random.permutation(batch_size)
+        X_raw, y = X_raw[shuffle], y[shuffle]
+        
+        X_bin_p = self.p_quantizer.process(X_raw[:, 0, np.newaxis])
+        X_bin_e = self.e_quantizer.process(X_raw[:, 1, np.newaxis])
+        X_bin = np.concatenate((X_bin_p, X_bin_e), axis=1)
+        
+        return X_bin, X_raw, y
+
+    def execute_natural_stream(self, total_epochs: int = 5, samples_per_epoch: int = 15000) -> None:
+        """Feeds streaming matrices to the hardware-blind RAM registers over time."""
+        print(f"\n>> Commencing Live Training Pipeline ({total_epochs} Stream Eras, {samples_per_epoch:,} frames/era)...")
+        
+        for epoch in range(1, total_epochs + 1):
+            X_train_bin, X_train_raw, y_train = self.generate_streaming_batch(samples_per_epoch)
+            X_test_bin, X_test_raw, y_test = self.generate_streaming_batch(3000)
+            
+            start_time = time.perf_counter()
+            self.engine.memorize(X_train_bin, X_train_raw, y_train)
+            end_time = time.perf_counter()
+            
+            tally_scores = self.engine.evaluate(X_test_bin, X_test_raw)
+            predictions = np.argmax(tally_scores, axis=1)
+            accuracy = float(np.mean(predictions == y_test) * 100)
+            
+            occupied_cells = np.sum(self.engine.discriminator_banks == 1)
+            total_cells = self.engine.discriminator_banks.size
+            saturation_ratio = (occupied_cells / total_cells) * 100
+            
+            print(f"Era {epoch:02d} | Ingested: {samples_per_epoch:,} | "
+                  f"Delta: {(end_time - start_time)*1000:.1f}ms | "
+                  f"Test Accuracy: {accuracy:.2f}% | "
+                  f"RAM Saturation: {saturation_ratio:.2f}%")

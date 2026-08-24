@@ -10,15 +10,18 @@ class NISTStatisticalSuite:
     def __init__(self, engine: PurePhysicsInformedWiSARD) -> None:
         self.engine: PurePhysicsInformedWiSARD = engine
         self.mapping_matrix: np.ndarray = engine.address_mapping_table
+        
+        # Dynamically calculate required bit width based on system configurations
+        # Upper partition uses 2^(TUPLE_SIZE + 1) slots. Total bits needed per int = TUPLE_SIZE + 1
+        self.bit_width: int = self.engine.cfg.TUPLE_SIZE + 1
         self.bit_stream: np.ndarray = self._extract_mapping_bitstream()
 
     def _extract_mapping_bitstream(self) -> np.ndarray:
-        """Converts the mapping integers to pure unstructured binary sequences."""
-        # Unpack indices using direct remainder layout mapping patterns to prevent zero-padding runs
+        """Converts the mapping integers to pure unstructured binary sequences dynamically."""
         bits = []
+        fmt_str = f"0{self.bit_width}b"  # Dynamic string formatting to close the gap completely
         for val in self.mapping_matrix.flatten():
-            # Break index value down to a 6-bit binary representation array
-            bits.extend([int(x) for x in f"{val:06b}"])
+            bits.extend([int(x) for x in format(val, fmt_str)])
         return np.array(bits, dtype=np.int8)
 
     def run_monobit_frequency_test(self) -> Tuple[float, bool]:
