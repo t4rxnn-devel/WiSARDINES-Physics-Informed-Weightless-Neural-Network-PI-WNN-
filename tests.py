@@ -143,6 +143,38 @@ class EngineContractTests(unittest.TestCase):
             self.assertLess(engine.memory_bytes, maximum_bytes)
             self.assertEqual(engine.evaluate(bits, raw).shape, (2, 3))
 
+    def test_address_symmetry_orbit_is_closed(self) -> None:
+        address = 0b10010011
+        orbit = self.engine.address_orbit(address)
+        self.assertIn(address, orbit)
+        self.assertEqual(len(orbit), len(set(orbit)))
+        self.assertTrue(all(0 <= value < 2 ** self.config.TUPLE_SIZE for value in orbit))
+
+    def test_symmetry_seeding_populates_extra_addresses(self) -> None:
+        config = WiSARDPhysicsConfig(storage_mode="sparse")
+        engine = PurePhysicsInformedWiSARD(config)
+        bits = np.zeros((1, config.TOTAL_INPUT_BITS), dtype=np.uint8)
+        raw = np.zeros((1, config.BASE_FEATURES))
+        result = engine.memorize_symmetric(bits, raw, np.array([0], dtype=np.int32))
+        self.assertGreaterEqual(result["occupied_bits_added"], 1)
+        self.assertGreaterEqual(result["logical_addresses_seeded"], config.NUM_RAMS_PER_DISCRIMINATOR)
+
+    def test_saliency_reports_exact_logical_sources(self) -> None:
+        bits = np.zeros((1, self.config.TOTAL_INPUT_BITS), dtype=np.uint8)
+        raw = np.zeros((1, self.config.BASE_FEATURES))
+        self.engine.memorize(bits, raw, np.array([0], dtype=np.int32))
+        records = self.engine.explain(bits, raw, target_discriminator=0)[0]
+        self.assertEqual(len(records), self.config.NUM_RAMS_PER_DISCRIMINATOR)
+        self.assertTrue(all(record["attribution_status"] == "exact" for record in records))
+        self.assertTrue(all(record["feature_index"] >= 0 for record in records))
+
+    def test_ising_symmetry_orbit_and_seed(self) -> None:
+        simulator = IsingTransitionSimulator(size=5, seed=3)
+        orbit = simulator.symmetry_orbit(0b100010001)
+        self.assertGreaterEqual(len(orbit), 1)
+        seeded = simulator.seed_symmetric_transition(0b100010001, 0b111010111)
+        self.assertEqual(seeded, len(simulator.symmetry_orbit(0b100010001)) * len(simulator.symmetry_orbit(0b111010111)))
+
 
 if __name__ == "__main__":
     unittest.main()

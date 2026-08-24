@@ -26,6 +26,32 @@ class IsingTransitionSimulator:
                 )
         return address
 
+    @staticmethod
+    def symmetry_orbit(address: int) -> tuple[int, ...]:
+        """Return rotations and reflections of a 3x3 binary neighborhood."""
+        if not 0 <= address < 2 ** 9:
+            raise ValueError("Ising neighborhood address must fit nine bits")
+        grid = np.array([(address >> (8 - index)) & 1 for index in range(9)], dtype=np.uint8).reshape(3, 3)
+        variants = []
+        for rotation in range(4):
+            rotated = np.rot90(grid, rotation)
+            variants.extend((rotated, np.fliplr(rotated)))
+        return tuple(sorted({int("".join(str(int(bit)) for bit in variant.flat), 2) for variant in variants}))
+
+    def seed_symmetric_transition(self, before: int, after: int, count: int = 1) -> int:
+        """Seed a transition across the local rotation/reflection orbit."""
+        if count <= 0:
+            raise ValueError("count must be positive")
+        orbit = set(self.symmetry_orbit(before))
+        orbit_after = self.symmetry_orbit(after)
+        for before_variant in orbit:
+            for after_variant in orbit_after:
+                key = (before_variant, after_variant)
+                if key not in self.transition_counts:
+                    self.transition_counts[key] = np.zeros(2, dtype=np.int64)
+                self.transition_counts[key][1] += count
+        return len(orbit) * len(orbit_after)
+
     def local_energy_delta(self, row: int, column: int) -> float:
         neighbor_sum = sum(
             self.spins[(row + row_offset) % self.size, (column + column_offset) % self.size]

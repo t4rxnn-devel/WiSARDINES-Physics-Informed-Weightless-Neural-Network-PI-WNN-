@@ -30,6 +30,8 @@ class PurePhysicsInformedWiSARD:
         )
         self.discriminator_counts = np.zeros(self.cfg.NUM_DISCRIMINATORS, dtype=np.int64)
         self.sparse_ram_bits: set[tuple[int, int, int]] = set()
+        self.symmetry_seed_count = 0
+        self.symmetry_collision_count = 0
         self.address_mapping_table = self._compile_feature_isolated_mapping()
 
     def _compile_feature_isolated_mapping(self) -> np.ndarray:
@@ -70,6 +72,60 @@ class PurePhysicsInformedWiSARD:
             return address
         mixed = int(address) ^ (int(ram) * 0x9E3779B1) ^ (int(discriminator) * 0x85EBCA77)
         return (mixed ^ (mixed >> 16)) % self.cfg.HASH_BUCKETS
+
+    def address_orbit(self, address: int) -> tuple[int, ...]:
+        """Return the opt-in bitwise orbit for a tuple address.
+
+        The orbit contains identity, bit reversal, complement, and reversed
+        complement. These transformations are valid only when the caller has
+        declared those symmetries for its physical system.
+        """
+        tuple_limit = 1 << self.cfg.TUPLE_SIZE
+        tier, tuple_address = divmod(int(address), tuple_limit)
+        if tier not in range(3) or not 0 <= tuple_address < tuple_limit:
+            raise ValueError("address is outside the tuple address space")
+        reversed_address = int(f"{tuple_address:0{self.cfg.TUPLE_SIZE}b}"[::-1], 2)
+        complement = (tuple_limit - 1) ^ tuple_address
+        orbit = {tuple_address, reversed_address, complement, (tuple_limit - 1) ^ reversed_address}
+        return tuple(sorted(tier * tuple_limit + value for value in orbit))
+
+    def memorize_symmetric(
+        self,
+        binary_stream: np.ndarray,
+        raw_telemetry: np.ndarray,
+        discriminator_id: np.ndarray,
+    ) -> dict[str, int]:
+        """Seed declared address symmetries without allocating a larger table."""
+        binary_stream = np.asarray(binary_stream)
+        raw_telemetry = np.asarray(raw_telemetry)
+        discriminator_id = np.asarray(discriminator_id)
+        self._validate_inputs(binary_stream, raw_telemetry)
+        self._validate_discriminator_ids(discriminator_id, binary_stream.shape[0])
+        addresses = self._extract_physics_partitioned_addresses(binary_stream, raw_telemetry)
+        before = self.occupied_bits
+        for sample_index, discriminator in enumerate(discriminator_id):
+            virtual_count = 0
+            for ram_index, address in enumerate(addresses[sample_index]):
+                for orbit_address in self.address_orbit(int(address)):
+                    virtual_count += 1
+                    key = (int(discriminator), ram_index, orbit_address)
+                    if self.cfg.STORAGE_MODE == "sparse":
+                        self.sparse_ram_bits.add(key)
+                    else:
+                        stored = self._stored_address(*key)
+                        self.discriminator_banks[
+                            int(discriminator), ram_index, stored // 8
+                        ] |= np.uint8(1 << (stored % 8))
+                    self.ram_counts[key] = self.ram_counts.get(key, 0) + 1
+                    self.ram_totals[int(discriminator), ram_index] += 1
+            self.discriminator_counts[int(discriminator)] += virtual_count
+        self.symmetry_seed_count += int(len(discriminator_id) * self.cfg.NUM_RAMS_PER_DISCRIMINATOR)
+        self.symmetry_collision_count += max(0, self.symmetry_seed_count * 4 - (self.occupied_bits - before))
+        return {
+            "logical_addresses_seeded": self.symmetry_seed_count,
+            "occupied_bits_added": self.occupied_bits - before,
+            "storage_collisions": self.symmetry_collision_count,
+        }
 
     def _validate_inputs(
         self,
@@ -273,3 +329,45 @@ class PurePhysicsInformedWiSARD:
         self.ram_totals.fill(0)
         self.discriminator_counts.fill(0)
         self.sparse_ram_bits.clear()
+        self.symmetry_seed_count = 0
+        self.symmetry_collision_count = 0
+
+    def explain(
+        self,
+        binary_stream: np.ndarray,
+        raw_telemetry: np.ndarray,
+        target_discriminator: int | None = None,
+    ) -> list[list[dict[str, int | bool | str]]]:
+        """Return exact contributing tuple bits and thermometer bins per sample."""
+        binary_stream = np.asarray(binary_stream)
+        raw_telemetry = np.asarray(raw_telemetry)
+        self._validate_inputs(binary_stream, raw_telemetry)
+        if target_discriminator is not None and not 0 <= target_discriminator < self.cfg.NUM_DISCRIMINATORS:
+            raise ValueError("target_discriminator is outside the discriminator range")
+        addresses = self._extract_physics_partitioned_addresses(binary_stream, raw_telemetry)
+        explanations: list[list[dict[str, int | bool | str]]] = []
+        for sample_index, sample_addresses in enumerate(addresses):
+            bank = int(np.argmax(self.evaluate(binary_stream[sample_index:sample_index + 1], raw_telemetry[sample_index:sample_index + 1])[0])) if target_discriminator is None else target_discriminator
+            sample_records = []
+            for ram_index, address in enumerate(sample_addresses):
+                stored = self._stored_address(bank, ram_index, int(address))
+                if self.cfg.STORAGE_MODE == "sparse":
+                    hit = (bank, ram_index, int(address)) in self.sparse_ram_bits
+                else:
+                    hit = bool(self.discriminator_banks[bank, ram_index, stored // 8] & np.uint8(1 << (stored % 8)))
+                if hit:
+                    bits = self.address_mapping_table[ram_index].tolist()
+                    sample_records.append({
+                        "discriminator": bank,
+                        "ram": ram_index,
+                        "logical_address": int(address),
+                        "stored_address": int(stored),
+                        "hit": True,
+                        "input_bit_indices": ",".join(str(bit) for bit in bits),
+                        "feature_index": int(bits[0] // self.cfg.BIT_DEPTH),
+                        "thermometer_bin_min": int(min(bit % self.cfg.BIT_DEPTH for bit in bits)),
+                        "thermometer_bin_max": int(max(bit % self.cfg.BIT_DEPTH for bit in bits)),
+                        "attribution_status": "exact" if self.cfg.STORAGE_MODE != "hashed" else "bucket_exact_logical_ambiguous",
+                    })
+            explanations.append(sample_records)
+        return explanations

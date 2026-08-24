@@ -4,9 +4,9 @@ Physics-informed weightless learning with bit-packed memory, bounded hardware gr
 
 > The RAMs are tiny. The caveats are not.
 
-## Release 1.1.0
+## Release 1.2.0
 
-This release adds configurable temporal windows, sparse and hashed tuple storage, hard and soft physical constraints, Ising and double-pendulum simulators, leakage-aware real-data ingestion, and a one-million-event HIGGS benchmark.
+This release adds symmetry-orbit RAM seeding, reverse-lookup saliency, configurable temporal windows, sparse and hashed tuple storage, hard and soft physical constraints, Ising and double-pendulum simulators, leakage-aware real-data ingestion, and a one-million-event HIGGS benchmark.
 
 ## Quick Start
 
@@ -77,6 +77,14 @@ Thermometer quantization preserves monotonic ordering and clips outside values t
 
 `physics_simulators.py` contains two reference systems. `IsingTransitionSimulator` maps periodic local 3x3 neighborhoods to 9-bit addresses and learns Metropolis transition frequencies. `EnergyConstrainedDoublePendulum` integrates a chaotic double pendulum and projects velocity back to the initial energy budget after every step. `hardware_profile.py` reports analytical address-gate estimates, exact dense RAM bytes, sparse dictionary usage, and hash collisions. Set `storage_mode="sparse"` for exact accessed-address storage or `storage_mode="hashed"` for a fixed bucket budget. Increasing tuple size has exponential dense RAM cost: in the checked-in window-4 profile, tuple sizes 4, 8, and 16 use 2,304, 18,432, and 2,359,296 bytes respectively; tuple size 16 is 128x tuple size 8. Sparse and hashed modes avoid that dense allocation.
 
+## Symmetry And Saliency
+
+`PurePhysicsInformedWiSARD.memorize_symmetric` seeds the declared identity, bit-reversal, complement, and reversed-complement orbit for every logical tuple address while preserving its physical tier. `IsingTransitionSimulator.symmetry_orbit` and `seed_symmetric_transition` provide the corresponding 3x3 rotation/reflection operations. These are algebraic data priors, not a proof that every transformation is valid for every physical system; use them only for symmetries established by the domain model.
+
+`PurePhysicsInformedWiSARD.explain` performs reverse lookup and returns the discriminator, RAM, logical/stored address, contributing input bit indices, feature index, thermometer-bin range, and attribution status. Dense and sparse modes provide exact logical attribution. Hashed mode reports `bucket_exact_logical_ambiguous` when a shared bucket means the physical bucket hit cannot identify one unique original address. The implementation therefore does not support a blanket claim of 100% explainability or microsecond latency without target-hardware timing and collision analysis.
+
+Likewise, symmetry seeding can improve coverage of declared equivalent states, but it does not solve the generalization problem in the universal sense. The HIGGS benchmark is the relevant falsifiable check: results must be compared against an unseeded baseline under the same split, seed, feature set, and memory budget. `results/symmetry_saliency.json` records the deterministic smoke result.
+
 ## Scope Of The Diagnostics
 
 The statistical class in `tests.py` is an engine-RAM smoke diagnostic, not a cryptographic randomness certification or a complete NIST SP 800-22 implementation. Its bits are the actual populated RAM state, so sparse-memory failures are expected at low training volume.
@@ -87,6 +95,7 @@ The statistical class in `tests.py` is an engine-RAM smoke diagnostic, not a cry
 - `experiments/noise_sensitivity.py` measures accuracy under increasing telemetry noise for a selected window size.
 - `experiments/physics_constraints.py` verifies hard masking, soft unseen-address scores, Ising transitions, and pendulum energy.
 - `experiments/hardware_alignment.py` profiles RAM growth and address logic as tuple size changes.
+- `experiments/symmetry_saliency.py` exercises symmetry seeding and reverse-lookup attribution.
 - JSON outputs in `results/` are generated artifacts and should be regenerated when changing Python, NumPy, configuration, or random seed.
 
 ## Benchmark Receipt

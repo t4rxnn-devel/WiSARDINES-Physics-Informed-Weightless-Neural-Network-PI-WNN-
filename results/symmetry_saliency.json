@@ -1,0 +1,60 @@
+{
+  "address_orbit_size": 2,
+  "symmetry_seed": {
+    "logical_addresses_seeded": 16,
+    "occupied_bits_added": 62,
+    "storage_collisions": 2
+  },
+  "saliency_records": [
+    {
+      "discriminator": 0,
+      "ram": 0,
+      "logical_address": 618,
+      "stored_address": 618,
+      "hit": true,
+      "input_bit_indices": "23,13,5,18,10,19,14,24",
+      "feature_index": 0,
+      "thermometer_bin_min": 5,
+      "thermometer_bin_max": 24,
+      "attribution_status": "exact"
+    },
+    {
+      "discriminator": 0,
+      "ram": 1,
+      "logical_address": 645,
+      "stored_address": 645,
+      "hit": true,
+      "input_bit_indices": "2,30,27,28,19,7,25,10",
+      "feature_index": 0,
+      "thermometer_bin_min": 2,
+      "thermometer_bin_max": 30,
+      "attribution_status": "exact"
+    },
+    {
+      "discriminator": 0,
+      "ram": 2,
+      "logical_address": 651,
+      "stored_address": 651,
+      "hit": true,
+      "input_bit_indices": "3,16,24,21,1,20,12,7",
+      "feature_index": 0,
+      "thermometer_bin_min": 1,
+      "thermometer_bin_max": 24,
+      "attribution_status": "exact"
+    },
+    {
+      "discriminator": 0,
+      "ram": 3,
+      "logical_address": 761,
+      "stored_address": 761,
+      "hit": true,
+      "input_bit_indices": "5,10,1,12,4,25,19,11",
+      "feature_index": 0,
+      "thermometer_bin_min": 1,
+      "thermometer_bin_max": 25,
+      "attribution_status": "exact"
+    }
+  ],
+  "ising_transition_orbit_entries": 4,
+  "saliency_is_exact": true
+}
