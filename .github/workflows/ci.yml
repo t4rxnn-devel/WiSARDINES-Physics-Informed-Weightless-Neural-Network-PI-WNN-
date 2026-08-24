@@ -1,0 +1,33 @@
+name: PI-WNN Hardware-Emulated Core Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify-engine:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+    - name: Checkout Repository Source
+      uses: actions/checkout@v4
+
+    - name: Set Up Production Python Runtime Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install Hardened Numerical Foundations
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy scipy
+
+    - name: Execute Kinematic & Cryptographic Diagnostics
+      run: |
+        python main.py
