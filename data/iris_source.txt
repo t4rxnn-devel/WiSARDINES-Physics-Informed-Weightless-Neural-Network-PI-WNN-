@@ -1,0 +1,5 @@
+Dataset: UCI Iris
+Source: https://archive.ics.uci.edu/dataset/53/iris
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+Downloaded: 2026-08-24
+Schema: sepal_length,sepal_width,petal_length,petal_width,label

@@ -1,0 +1,32 @@
+[
+  {
+    "noise_std": 0.0,
+    "window_size": 4,
+    "batch_size": 256,
+    "accuracy": 0.73828125
+  },
+  {
+    "noise_std": 0.05,
+    "window_size": 4,
+    "batch_size": 256,
+    "accuracy": 0.71484375
+  },
+  {
+    "noise_std": 0.2,
+    "window_size": 4,
+    "batch_size": 256,
+    "accuracy": 0.6875
+  },
+  {
+    "noise_std": 0.5,
+    "window_size": 4,
+    "batch_size": 256,
+    "accuracy": 0.6328125
+  },
+  {
+    "noise_std": 1.0,
+    "window_size": 4,
+    "batch_size": 256,
+    "accuracy": 0.5390625
+  }
+]

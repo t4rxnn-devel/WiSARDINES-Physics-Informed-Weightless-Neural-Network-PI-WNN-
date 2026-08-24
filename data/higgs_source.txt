@@ -1,0 +1,5 @@
+Dataset: UCI HIGGS
+Source: https://archive.ics.uci.edu/dataset/280/higgs
+Scale: 11,000,000 Monte Carlo physics events, 28 features, binary label
+Training selection: all 28 published features, streamed in chunks; first four remain the physics anchor
+Note: this is simulated physics data, not collision-detector observations.

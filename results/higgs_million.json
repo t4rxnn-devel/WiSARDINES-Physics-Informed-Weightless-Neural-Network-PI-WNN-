@@ -1,0 +1,28 @@
+{
+  "dataset": "UCI HIGGS (Monte Carlo physics benchmark)",
+  "archive": "data/higgs.zip",
+  "rows_processed": 1000000,
+  "train_samples": 800000,
+  "test_samples": 200000,
+  "evaluated_samples": 200000,
+  "accuracy": 0.62378,
+  "balanced_accuracy": 0.6150832583287238,
+  "confusion_matrix": [
+    [
+      44471,
+      49369
+    ],
+    [
+      25875,
+      80285
+    ]
+  ],
+  "train_class_counts": [
+    376487,
+    423513
+  ],
+  "chunk_size": 8192,
+  "test_percent": 20,
+  "seed": 7,
+  "model_memory_bytes": 21504
+}

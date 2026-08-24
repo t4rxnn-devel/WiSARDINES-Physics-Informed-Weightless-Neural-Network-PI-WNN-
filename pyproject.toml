@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pi_wnn"
-version = "1.0.0"
+version = "1.1.0"
 authors = [
     { name = "t4rxnn-devel" }
 ]
@@ -23,6 +23,5 @@ dependencies = [
     "scipy>=1.8.0"
 ]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["config*", "encoder*", "wisard_engine*", "tests*", "pipeline*"]
+[tool.setuptools]
+py-modules = ["config", "encoder", "wisard_engine", "pipeline", "windowing", "physics_simulators", "hardware_profile", "real_data", "tests", "main"]

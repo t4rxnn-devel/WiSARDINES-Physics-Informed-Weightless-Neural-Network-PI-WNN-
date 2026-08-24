@@ -1,0 +1,38 @@
+[
+  {
+    "window_size": 1,
+    "batch_size": 256,
+    "accuracy": 0.69140625,
+    "memorize_samples_per_second": 405224.22661453584,
+    "encoded_bits": 128,
+    "rams_per_discriminator": 16,
+    "model_bytes": 4608
+  },
+  {
+    "window_size": 4,
+    "batch_size": 256,
+    "accuracy": 0.80078125,
+    "memorize_samples_per_second": 140173.58530058456,
+    "encoded_bits": 512,
+    "rams_per_discriminator": 64,
+    "model_bytes": 18432
+  },
+  {
+    "window_size": 8,
+    "batch_size": 256,
+    "accuracy": 0.76171875,
+    "memorize_samples_per_second": 36046.92521259515,
+    "encoded_bits": 1024,
+    "rams_per_discriminator": 128,
+    "model_bytes": 36864
+  },
+  {
+    "window_size": 16,
+    "batch_size": 256,
+    "accuracy": 0.6875,
+    "memorize_samples_per_second": 29580.04539502644,
+    "encoded_bits": 2048,
+    "rams_per_discriminator": 256,
+    "model_bytes": 73728
+  }
+]

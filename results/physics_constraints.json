@@ -1,0 +1,9 @@
+{
+  "window_size": 4,
+  "unseen_score_is_finite": true,
+  "invalid_physics_is_hard_masked": true,
+  "ising_acceptance_rate": 0.41,
+  "ising_transition_patterns": 302,
+  "pendulum_all_steps_valid": true,
+  "pendulum_energy_error": 0.0
+}
