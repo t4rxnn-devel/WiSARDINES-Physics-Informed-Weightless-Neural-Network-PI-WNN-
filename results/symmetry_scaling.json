@@ -1,0 +1,122 @@
+[
+  {
+    "volume": 256,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 256,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5519628471814384,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 1024,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5045238769174287,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 1024,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5763945585108192,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 4096,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5178565411284002,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 4096,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5972205106382432,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 16384,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5701871248020713,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 16384,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.609268724675243,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 65536,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5991611660636542,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 65536,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.6092340249844193,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 100000,
+    "mode": "baseline",
+    "balanced_accuracy": 0.6046920962047123,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 100000,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.6119273628363342,
+    "test_size": 20000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  }
+]

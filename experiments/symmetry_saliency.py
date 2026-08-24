@@ -27,7 +27,7 @@ def main() -> None:
     ising = IsingTransitionSimulator(size=8, seed=7)
     ising_seeded = ising.seed_symmetric_transition(0b100010001, 0b111010111)
     result = {
-        "address_orbit_size": len(engine.address_orbit(0)),
+        "address_orbit_size_for_zero": len(engine.address_orbit(0)),
         "symmetry_seed": seed_result,
         "saliency_records": saliency[:4],
         "ising_transition_orbit_entries": ising_seeded,

@@ -1,5 +1,5 @@
 {
-  "address_orbit_size": 2,
+  "address_orbit_size_for_zero": 2,
   "symmetry_seed": {
     "logical_addresses_seeded": 16,
     "occupied_bits_added": 62,

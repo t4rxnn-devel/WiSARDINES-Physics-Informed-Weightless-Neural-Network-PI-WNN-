@@ -1,0 +1,242 @@
+[
+  {
+    "volume": 256,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5,
+    "test_size": 10000,
+    "seed": 3,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 256,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5583900445273617,
+    "test_size": 10000,
+    "seed": 3,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 1024,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5034766322898216,
+    "test_size": 10000,
+    "seed": 3,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 1024,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5795981198416262,
+    "test_size": 10000,
+    "seed": 3,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 4096,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5144488269407563,
+    "test_size": 10000,
+    "seed": 3,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 4096,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5970588556513001,
+    "test_size": 10000,
+    "seed": 3,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 16384,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5733932149577501,
+    "test_size": 10000,
+    "seed": 3,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 16384,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.6102425620161239,
+    "test_size": 10000,
+    "seed": 3,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 256,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5,
+    "test_size": 10000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 256,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5536074800194328,
+    "test_size": 10000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 1024,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5056678012139608,
+    "test_size": 10000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 1024,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5804779864281244,
+    "test_size": 10000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 4096,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5207487418305453,
+    "test_size": 10000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 4096,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5983542082652629,
+    "test_size": 10000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 16384,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5763872605216863,
+    "test_size": 10000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 16384,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.6125861242410338,
+    "test_size": 10000,
+    "seed": 7,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 256,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5,
+    "test_size": 10000,
+    "seed": 19,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 256,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5510156563629065,
+    "test_size": 10000,
+    "seed": 19,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 1024,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5050260939381774,
+    "test_size": 10000,
+    "seed": 19,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 1024,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5780349257326375,
+    "test_size": 10000,
+    "seed": 19,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 4096,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5201184263348053,
+    "test_size": 10000,
+    "seed": 19,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 4096,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.5990806904857487,
+    "test_size": 10000,
+    "seed": 19,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 16384,
+    "mode": "baseline",
+    "balanced_accuracy": 0.5743416298675231,
+    "test_size": 10000,
+    "seed": 19,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  },
+  {
+    "volume": 16384,
+    "mode": "symmetric",
+    "balanced_accuracy": 0.6104315535929346,
+    "test_size": 10000,
+    "seed": 19,
+    "input_features": 28,
+    "tuple_size": 8,
+    "symmetry_orbit": 4
+  }
+]

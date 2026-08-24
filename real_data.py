@@ -35,7 +35,7 @@ def _validate(features: np.ndarray, labels: np.ndarray, groups: np.ndarray | Non
 
 
 def load_csv(path: str | Path, feature_columns: list[str], label_column: str, group_column: str | None = None) -> RealDataset:
-    """Load four named physical columns and a label from a CSV file."""
+    """Load at least four named features and a label from a CSV file."""
     if len(feature_columns) < 4:
         raise ValueError("feature_columns must contain at least four names")
     with Path(path).open(newline="", encoding="utf-8") as handle:
@@ -82,11 +82,10 @@ def stratified_split(dataset: RealDataset, test_fraction: float = 0.2, seed: int
 
 
 def iter_higgs_chunks(path: str | Path, chunk_size: int = 8192, limit: int | None = None) -> Iterator[tuple[np.ndarray, np.ndarray]]:
-    """Stream UCI HIGGS high-level mass features without loading the 11M rows.
+    """Stream all 28 UCI HIGGS features without loading the 11M rows.
 
-    HIGGS rows contain a label followed by 28 features. Columns 22-25 are
-    high-level mass observables (zero-based feature indexes 21-24 after the
-    label). The source is Monte Carlo physics data, not detector observations.
+    HIGGS rows contain a label followed by 28 features. The source is Monte
+    Carlo physics data, not detector observations.
     """
     if chunk_size <= 0:
         raise ValueError("chunk_size must be positive")

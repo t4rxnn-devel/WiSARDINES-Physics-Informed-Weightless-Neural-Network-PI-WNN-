@@ -4,9 +4,9 @@ Physics-informed weightless learning with bit-packed memory, bounded hardware gr
 
 > The RAMs are tiny. The caveats are not.
 
-## Release 1.2.0
+## Release 1.3.0
 
-This release adds symmetry-orbit RAM seeding, reverse-lookup saliency, configurable temporal windows, sparse and hashed tuple storage, hard and soft physical constraints, Ising and double-pendulum simulators, leakage-aware real-data ingestion, and a one-million-event HIGGS benchmark.
+This release adds rigid baseline-versus-symmetry volume testing, symmetry-orbit RAM seeding, reverse-lookup saliency, configurable temporal windows, sparse and hashed tuple storage, hard and soft physical constraints, Ising and double-pendulum simulators, leakage-aware real-data ingestion, and a one-million-event HIGGS benchmark.
 
 ## Quick Start
 
@@ -84,6 +84,10 @@ Thermometer quantization preserves monotonic ordering and clips outside values t
 `PurePhysicsInformedWiSARD.explain` performs reverse lookup and returns the discriminator, RAM, logical/stored address, contributing input bit indices, feature index, thermometer-bin range, and attribution status. Dense and sparse modes provide exact logical attribution. Hashed mode reports `bucket_exact_logical_ambiguous` when a shared bucket means the physical bucket hit cannot identify one unique original address. The implementation therefore does not support a blanket claim of 100% explainability or microsecond latency without target-hardware timing and collision analysis.
 
 Likewise, symmetry seeding can improve coverage of declared equivalent states, but it does not solve the generalization problem in the universal sense. The HIGGS benchmark is the relevant falsifiable check: results must be compared against an unseeded baseline under the same split, seed, feature set, and memory budget. `results/symmetry_saliency.json` records the deterministic smoke result.
+
+`experiments/symmetry_scaling.py` performs that rigid comparison. It freezes the row-hash split, test set, seed, 28-feature encoding, tuple size, dense backend, and evaluation code; only `memorize` versus `memorize_symmetric` changes. Across seeds 3, 7, and 19, mean balanced-accuracy lift was `+5.43`, `+7.46`, `+7.97`, and `+3.64` percentage points at training volumes 256, 1,024, 4,096, and 16,384. The checked-in plot is `results/symmetry_scaling.svg`, with raw data in `results/symmetry_scaling.json` and the multi-seed robustness data in `results/symmetry_robustness.json`.
+
+This is not a universal Noether theorem implementation: bit reversal and complement are valid only when a domain owner has established the corresponding symmetry and label invariance. The HIGGS result is an empirical algebraic-prior experiment, not proof that all four transformations are physical symmetries of the HIGGS generator.
 
 ## Scope Of The Diagnostics
 
