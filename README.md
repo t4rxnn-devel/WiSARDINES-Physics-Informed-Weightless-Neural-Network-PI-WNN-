@@ -4,9 +4,9 @@ Physics-informed weightless learning with bit-packed memory, bounded hardware gr
 
 > The RAMs are tiny. The caveats are not.
 
-## Release 1.3.0
+## Release 1.4.0
 
-This release adds rigid baseline-versus-symmetry volume testing, symmetry-orbit RAM seeding, reverse-lookup saliency, configurable temporal windows, sparse and hashed tuple storage, hard and soft physical constraints, Ising and double-pendulum simulators, leakage-aware real-data ingestion, and a one-million-event HIGGS benchmark.
+This release adds continuous PINN/GBT comparison tooling, a dependency-free C99 core, Gray-coded quantization, exact cuckoo address storage, integer symplectic integration, rigid baseline-versus-symmetry volume testing, symmetry-orbit RAM seeding, reverse-lookup saliency, configurable temporal windows, sparse and hashed tuple storage, hard and soft physical constraints, Ising and double-pendulum simulators, leakage-aware real-data ingestion, and a one-million-event HIGGS benchmark.
 
 ## Quick Start
 
@@ -105,6 +105,18 @@ The statistical class in `tests.py` is an engine-RAM smoke diagnostic, not a cry
 ## Benchmark Receipt
 
 The checked-in one-million-row HIGGS run used all 28 published features, an 80/20 deterministic split, seed 7, and a `-10..10` thermometer range. It achieved `62.378%` accuracy and `61.508%` balanced accuracy. The earlier four-feature run achieved `52.089%` and `52.739%` under the same split. HIGGS is Monte Carlo physics data, not detector data; these numbers are benchmark evidence, not a claim of production scientific validity.
+
+## Continuous Baselines
+
+`experiments/continuous_baselines.py` compares the PI-WNN with an XGBoost gradient-boosted tree and a PyTorch residual model on one fixed HIGGS split. Install optional dependencies with `python -m pip install -e '.[baselines]'`. It reports measured wall time and an explicitly labelled energy proxy (`seconds * --power-watts`); it cannot establish a 10,000x energy or 100x speed claim without the same hardware, power instrumentation, and protocol for every model. The PINN is a baseline residual model, not a claim that HIGGS itself is a PDE.
+
+## Embedded C Core
+
+`embedded_core.c` and `embedded_core.h` implement tuple addressing and flat `uint8_t` RAM bit operations with no external dependencies. Compile and run the host benchmark with `cc -std=c99 -O3 -Wall -Wextra -Werror embedded_core.c embedded_benchmark.c -o /tmp/pi_wnn_embedded && /tmp/pi_wnn_embedded`. Its output is a host timing only; a Pico, STM32, or other MCU requires a board-specific toolchain and an external current/power meter. No bare-metal watt or microsecond claim is published without that measurement.
+
+## Quantization And Integrators
+
+`ThermometerQuantizer(..., gray=True)` encodes quantized levels as reflected binary Gray codes. For adjacent interior levels, the Hamming distance is exactly one; the clipped endpoints are boundary saturation and are not additional levels. This improves binary-space locality but does not prove conservation of a continuous physical quantity. `FixedPointSymplecticPendulum` provides an integer leapfrog reference with fixed-point state; fixed-point rounding bounds drift but does not make exact energy conservation mathematically automatic.
 
 ## Release Notes
 

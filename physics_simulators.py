@@ -177,3 +177,28 @@ class EnergyConstrainedDoublePendulum:
             valid.append(self.step())
             states.append((self.state.theta1, self.state.theta2, self.state.omega1, self.state.omega2))
         return np.asarray(states), np.asarray(valid, dtype=bool)
+
+
+class FixedPointSymplecticPendulum:
+    """Integer leapfrog integrator with bounded fixed-point phase space."""
+
+    def __init__(self, theta: float = 0.5, omega: float = 0.0, *, scale: int = 100000, dt_ticks: int = 100) -> None:
+        if scale <= 0 or dt_ticks <= 0:
+            raise ValueError("scale and dt_ticks must be positive")
+        self.scale = int(scale)
+        self.dt_ticks = int(dt_ticks)
+        self.theta = int(round(theta * scale))
+        self.omega = int(round(omega * scale))
+
+    def step(self) -> tuple[int, int]:
+        acceleration = -(981 * self.theta) // (100 * self.scale)
+        half_velocity = self.omega + (acceleration * self.dt_ticks) // (2 * self.scale)
+        self.theta += (half_velocity * self.dt_ticks) // self.scale
+        acceleration_next = -(981 * self.theta) // (100 * self.scale)
+        self.omega = half_velocity + (acceleration_next * self.dt_ticks) // (2 * self.scale)
+        return self.theta, self.omega
+
+    def trajectory(self, steps: int) -> np.ndarray:
+        if steps <= 0:
+            raise ValueError("steps must be positive")
+        return np.asarray([self.step() for _ in range(steps)], dtype=np.int64)

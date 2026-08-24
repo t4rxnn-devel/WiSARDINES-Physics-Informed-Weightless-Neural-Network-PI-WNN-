@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pi_wnn"
-version = "1.3.0"
+version = "1.4.0"
 authors = [
     { name = "t4rxnn-devel" }
 ]
@@ -23,5 +23,8 @@ dependencies = [
     "scipy>=1.8.0"
 ]
 
+[project.optional-dependencies]
+baselines = ["torch>=2.0", "xgboost>=2.0"]
+
 [tool.setuptools]
-py-modules = ["config", "encoder", "wisard_engine", "pipeline", "windowing", "physics_simulators", "hardware_profile", "real_data", "tests", "main"]
+py-modules = ["config", "encoder", "wisard_engine", "pipeline", "windowing", "physics_simulators", "hardware_profile", "real_data", "cuckoo_table", "tests", "main"]

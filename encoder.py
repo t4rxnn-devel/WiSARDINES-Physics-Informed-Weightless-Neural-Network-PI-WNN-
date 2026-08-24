@@ -3,7 +3,7 @@ import numpy as np
 class ThermometerQuantizer:
     """Converts continuous telemetry inputs into linear, position-dependent bit arrays."""
 
-    def __init__(self, min_val: float, max_val: float, bit_depth: int) -> None:
+    def __init__(self, min_val: float, max_val: float, bit_depth: int, *, gray: bool = False) -> None:
         if min_val >= max_val:
             raise ValueError("Minimum bounds cannot exceed or match maximum bounds.")
         if bit_depth <= 0:
@@ -12,6 +12,7 @@ class ThermometerQuantizer:
         self.min_val: float = min_val
         self.max_val: float = max_val
         self.bit_depth: int = bit_depth
+        self.gray = bool(gray)
         self.thresholds: np.ndarray = np.linspace(min_val, max_val, bit_depth + 1)[1:-1]
 
     def process(self, matrix: np.ndarray) -> np.ndarray:
@@ -26,6 +27,15 @@ class ThermometerQuantizer:
 
         n_samples, n_features = matrix.shape
         clipped: np.ndarray = np.clip(matrix, self.min_val, self.max_val)
+
+        if self.gray:
+            levels = np.floor(
+                (clipped - self.min_val) / (self.max_val - self.min_val) * self.bit_depth
+            ).astype(np.int64)
+            levels = np.clip(levels, 0, self.bit_depth - 1)
+            gray_values = levels ^ (levels >> 1)
+            output_bits = ((gray_values[..., np.newaxis] >> np.arange(self.bit_depth - 1, -1, -1)) & 1).astype(np.uint8)
+            return output_bits.reshape(n_samples, n_features * self.bit_depth)
 
         # Parallel element evaluation via array broadcasting
         expanded_clipped: np.ndarray = np.expand_dims(clipped, axis=-1)

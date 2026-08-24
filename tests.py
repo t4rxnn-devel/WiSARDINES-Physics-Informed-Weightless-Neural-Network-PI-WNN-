@@ -6,6 +6,8 @@ from config import WiSARDPhysicsConfig
 from encoder import ThermometerQuantizer
 from wisard_engine import PurePhysicsInformedWiSARD
 from physics_simulators import EnergyConstrainedDoublePendulum, IsingTransitionSimulator
+from physics_simulators import FixedPointSymplecticPendulum
+from cuckoo_table import CuckooAddressTable
 
 class NISTStatisticalSuite:
     """Small statistical smoke suite for the engine's populated RAM state."""
@@ -174,6 +176,25 @@ class EngineContractTests(unittest.TestCase):
         self.assertGreaterEqual(len(orbit), 1)
         seeded = simulator.seed_symmetric_transition(0b100010001, 0b111010111)
         self.assertEqual(seeded, len(simulator.symmetry_orbit(0b100010001)) * len(simulator.symmetry_orbit(0b111010111)))
+
+    def test_gray_quantizer_has_one_bit_adjacent_bin_distance(self) -> None:
+        quantizer = ThermometerQuantizer(0.0, 8.0, 8, gray=True)
+        values = np.arange(8, dtype=float) + 0.5
+        encoded = quantizer.process(values.reshape(-1, 1))
+        distances = np.sum(encoded[1:] != encoded[:-1], axis=1)
+        np.testing.assert_array_equal(distances, np.ones(7, dtype=np.uint64))
+
+    def test_cuckoo_table_has_exact_lookup(self) -> None:
+        table = CuckooAddressTable(capacity=32)
+        table.insert(123, 9)
+        self.assertTrue(table.contains(123))
+        self.assertEqual(table.get(123), 9)
+        self.assertEqual(table.get(124), 0)
+
+    def test_fixed_point_integrator_stays_integer(self) -> None:
+        trajectory = FixedPointSymplecticPendulum().trajectory(20)
+        self.assertEqual(trajectory.dtype, np.int64)
+        self.assertTrue(np.isfinite(trajectory).all())
 
 
 if __name__ == "__main__":

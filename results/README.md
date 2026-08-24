@@ -16,3 +16,5 @@ The real-world reference run is `iris_real_world.json`, generated from the CC BY
 `symmetry_saliency.json` records the orbit-seeding and dense/sparse reverse-lookup smoke test. Exact attribution is guaranteed only for dense and sparse storage; hashed storage can introduce bucket ambiguity.
 
 `symmetry_scaling.json` compares baseline and symmetry-seeded models on one fixed HIGGS split. `symmetry_scaling.svg` is the corresponding plot. `symmetry_robustness.json` repeats the comparison for seeds 3, 7, and 19; the mean balanced-accuracy lift is positive at every tested volume, but the effect narrows as training volume grows.
+
+`continuous_baselines.json` is generated only when optional PyTorch and XGBoost dependencies are installed. Energy values are proxies unless external power measurements are supplied.
